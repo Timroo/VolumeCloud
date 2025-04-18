@@ -13,7 +13,7 @@ Shader "VolumeCloud/4-CloudLit"
         [Header(Noise)]
         [Space(10)]
         _NoiseScale("NoiseScale", Range(0, 100)) = 5
-        _Radius("Radius", Range(0, 2)) = 1.0 
+        _Radius("Radius", Range(0, 2)) = 1.0
 
         [Header(Light)]
         [Space(10)]
@@ -21,7 +21,7 @@ Shader "VolumeCloud/4-CloudLit"
         _OpacityLight("OpacityLight", Range(0, 100)) = 50
         _LightStepScale("LightStepScale", Range(0, 1)) = 0.5
         [IntRange] _LoopLight("LoopLight", Range(0, 128)) = 6
-    }   
+    }
 
     CGINCLUDE
     #include "UnityCG.cginc"
@@ -44,15 +44,15 @@ Shader "VolumeCloud/4-CloudLit"
 
     float _NoiseScale;
     float _Radius;
-    
+
     float _AbsorptionLight;
     float _OpacityLight;
     float _LightStepScale;
     int _LoopLight;
-    
+
     float4 _LightColor0;
 
-    // ref. https://www.shadertoy.com/view/lss3zr
+    // ref. https : //www.shadertoy.com / view / lss3zr
     // 伪随机数生成器
     inline float hash(float n){
         return frac(sin(n) * 43758.5453);
@@ -64,20 +64,20 @@ Shader "VolumeCloud/4-CloudLit"
         f = f * f * (3.0 - 2.0 * f);
         float n = p.x + p.y * 57.0 + 113.0 * p.z;
         float res =
-            lerp(lerp(lerp(hash(n +   0.0), hash(n +   1.0), f.x),
-                      lerp(hash(n +  57.0), hash(n +  58.0), f.x),f.y),
-                 lerp(lerp(hash(n + 113.0), hash(n + 114.0), f.x),
-                      lerp(hash(n + 170.0), hash(n + 171.0), f.x),f.y),
-                 f.z);
-        return res; 
+        lerp(lerp(lerp(hash(n + 0.0), hash(n + 1.0), f.x),
+        lerp(hash(n + 57.0), hash(n + 58.0), f.x), f.y),
+        lerp(lerp(hash(n + 113.0), hash(n + 114.0), f.x),
+        lerp(hash(n + 170.0), hash(n + 171.0), f.x), f.y),
+        f.z);
+        return res;
     }
     // 分形布朗运动（Fractal Brownian Motion）
     // - 自然，层次丰富的噪声，用于云、火焰、水面模拟
     inline float fbm(float3 p){
         float3x3 m = float3x3(
-            +0.00, +0.80, +0.60,
-            -0.80, +0.36, -0.48,
-            -0.60, -0.48, +0.64);
+        + 0.00, + 0.80, + 0.60,
+        - 0.80, + 0.36, - 0.48,
+        - 0.60, - 0.48, + 0.64);
         float f = 0.0;
         // 第一层噪声（最大强度）
         f += 0.5 * noise(p); p = mul(m, p) * 2.02;
@@ -108,10 +108,10 @@ Shader "VolumeCloud/4-CloudLit"
         float3 worldPos = i.worldPos;
         float3 worldDir = normalize(worldPos - _WorldSpaceCameraPos);
 
-        // 模型空间:视角方向rayMarch
+        // 模型空间 : 视角方向rayMarch
         float3 localPos = mul(unity_WorldToObject, float4(worldPos, 1.0));
         float3 localDir = UnityWorldToObjectDir(worldDir);
-        float3 localStep = localDir * step; // 单位向量 * 1/Loop
+        float3 localStep = localDir * step; // 单位向量 * 1 / Loop
         // 为每条射线加入一个“起始偏移”，避免 banding 条纹伪影
         float jitter = hash(localPos.x + localPos.y * 10 + localPos.z * 100 + _Time.x);
         localPos += localStep * jitter;
@@ -126,9 +126,9 @@ Shader "VolumeCloud/4-CloudLit"
         float transmittance = 1.0;
 
         // Raymarching
-        for(int i = 0; i < _Loop ; ++i){
+        for(int i = 0; i < _Loop; ++ i){
             float density = densityFunction(localPos);
-            
+
             if(density > 0.0){
                 // 【视线方向体积衰减】
                 float d = density * step;
@@ -136,11 +136,11 @@ Shader "VolumeCloud/4-CloudLit"
                 transmittance *= 1.0 - d * _Absorption;
                 if(transmittance < 0.01) break;
 
-                // 【光照方向的体积穿透（次级RayMarching）,制造内部阴影】
+                // 【光照方向的体积穿透（次级RayMarching）, 制造内部阴影】
                 float transmittanceLight = 1.0;
                 float3 lightPos = localPos;
 
-                for(int j = 0; j < _LoopLight; ++j){
+                for(int j = 0; j < _LoopLight; ++ j){
                     float densityLight = densityFunction(lightPos);
 
                     if(densityLight > 0.0){
@@ -163,7 +163,7 @@ Shader "VolumeCloud/4-CloudLit"
             color = clamp(color, 0.0, 1.0);
             localPos += localStep;
 
-            if(!all(max(0.5 - abs(localPos), 0.0))) break;
+            if(! all(max(0.5 - abs(localPos), 0.0))) break;
         }
         return color;
     }
@@ -171,14 +171,14 @@ Shader "VolumeCloud/4-CloudLit"
 
     SubShader
     {
-        Tags { "Queue" = "Transparent" "RenderType"="Transparent" }
+        Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
 
         Pass
         {
             Cull Back
             ZWrite Off
             Blend SrcAlpha OneMinusSrcAlpha
-            Lighting Off    //不参与光照
+            Lighting Off //不参与光照
 
             CGPROGRAM
             #pragma vertex vert

@@ -61,8 +61,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Absorption: 64
-    - _AbsorptionLight: 16.9
+    - _Absorption: 51.5
+    - _AbsorptionLight: 20
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DEBUG_RENDER_LOOP: 0
@@ -80,9 +80,9 @@ Material:
     - _NoiseScale: 10
     - _OcclusionStrength: 1
     - _Opacity: 100
-    - _OpacityLight: 80
+    - _OpacityLight: 60.5
     - _Parallax: 0.02
-    - _Radius: 0.7
+    - _Radius: 0.8
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
